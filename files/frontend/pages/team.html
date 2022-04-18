@@ -1,0 +1,110 @@
+<html>
+    <head>
+        <title>Stock Price Prediction</title>
+
+        <meta charset="utf-8">
+        <link rel="icon" href="../favicon.ico" type="image/gif" sizes="16x16">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <link rel="stylesheet" href="../static/bootstrap.min.css">
+        <script src="../static/jquery.min.js"></script>
+        <script src="../static/bootstrap.min.js"></script>
+
+        <script src="../static/chart.js"></script>
+
+        <link rel="stylesheet" href="../header.css">
+
+        <script>
+        
+            var pages = {
+                "home": "home.html",
+                "training": "training.html",
+                "predictions": "predictions.html",
+                "team": "team.html",
+                "contactus": "contactus.html"
+            }
+        
+            function changePage(e) {
+                var page = e.getAttribute("page");
+                window.location = pages[page];
+            }
+        
+        </script>
+
+    </head>
+    <body>
+        <div id="header">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-sm-4 header-title">Stock Price Prediction</div>
+                    <div class="col-sm-8">
+                        <div class="navbar">
+                            <div onclick="changePage(this)" page="home" class="nav-item">Home</div>
+                            <div onclick="changePage(this)" page="training" class="nav-item">Training</div>
+                            <div onclick="changePage(this)" page="predictions" class="nav-item">Predictions</div>
+                            <div onclick="changePage(this)" page="team" class="nav-item active">Team</div>
+                            <div onclick="changePage(this)" page="contactus" class="nav-item">Contact us</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="content">
+            <link rel="stylesheet" href="./team.css">
+
+            <div class="guide">
+                <div class="title">Our Guide</div>
+                <div class="member">
+                    <div class="photo">
+                        <img src="../icons/profiles/kiran_sir.jpg" />
+                    </div>
+                    <div class="name">N D S S KIRAN RELANGI</div>
+                    <div class="profession">(Assistant Professor)</div>
+                </div>
+            </div>
+
+            <div class="container-fluid team">
+                <div class="title">Our Team</div>
+                <div class="row">
+                    <div class="col-sm-3">
+                        <div class="member">
+                            <div class="photo">
+                                <img src="../icons/profiles/dinesh.jpg" />
+                            </div>
+                            <div class="name">Dinesh Somaraju</div>
+                            <div class="rollno">(317126510170)</div>
+                        </div>
+                    </div>
+                    <div class="col-sm-3">
+                        <div class="member">
+                            <div class="photo">
+                                <img src="../icons/profiles/rahul.jpeg" />
+                            </div>
+                            <div class="name">Sasumana Rahul</div>
+                            <div class="rollno">(317126510167)</div>
+                        </div>
+                    </div>
+                    <div class="col-sm-3">
+                        <div class="member">
+                            <div class="photo">
+                                <img src="../icons/profiles/ramaraju.jpeg" />
+                            </div>
+                            <div class="name">Adduri Maruthi Siva Rama Raju</div>
+                            <div class="rollno">(318126510L25)</div>
+                        </div>
+                    </div>
+                    <div class="col-sm-3">
+                        <div class="member">
+                            <div class="photo">
+                                <img src="../icons/profiles/sandeep.jpg" />
+                            </div>
+                            <div class="name">Oruganti Naga Sandeep</div>
+                            <div class="rollno">(318126510L29)</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>

@@ -1,0 +1,193 @@
+.upload {
+    text-align: center;
+}
+
+.upload button {
+    border: none;
+    outline: none;
+    border-radius: 7px;
+    background-color: rgb(67, 142, 255);
+    color: white;
+    padding: 5px;
+}
+
+.upload .selectFile {
+    display: none;
+}
+
+.datasetProperties {
+    position: relative;
+    margin-top: 20px;
+    width: 80%;
+    height: 330px;
+    box-shadow: rgba(50, 50, 93, 0.25) 0px 6px 12px -2px, rgba(0, 0, 0, 0.3) 0px 3px 7px -3px;
+    padding: 0;
+}
+
+.datasetProperties .filename {
+    margin-top: 15px;
+}
+
+.datasetProperties .filename .fileNameInput {
+    border: none;
+    outline: none;
+    border-bottom: 1px solid;
+    text-align: center;
+}
+
+.datasetProperties .dfHead {
+    text-align: center;
+    margin-top: 20px;
+    width: 95%;
+    height: 200px;
+    overflow-y: scroll;
+}
+
+.datasetProperties .dfHead .table {
+    font-size: 12px;
+    height: 100px;
+}
+
+.datasetProperties .dfHead .table thead th {
+    position: sticky;
+    top: 0;
+    background-color: white;
+}
+
+.datasetProperties .dfHead::-webkit-scrollbar {
+    display: none;
+}
+#closePriceGraph {
+    margin-top: 20px;
+}
+
+.datasetProperties .startTraining {
+    border: none;
+    outline: none;
+    border-radius: 7px;
+    background-color: rgb(123, 67, 255);
+    color: white;
+    padding: 5px;
+    margin-top: 10px;
+}
+
+.datasetProperties .placeholder {
+    position: absolute;
+    background-color: white;
+    height: 100%;
+    width: 100%;
+    z-index: 2;
+}
+
+.datasetProperties .placeholder .layer {
+    position: absolute;
+    background-color: rgba(0, 0, 0, 0.8);
+    height: 100%;
+    width: 100%;
+    z-index: 2;
+}
+
+.datasetProperties .placeholder .layerName {
+    color: white;
+    font-size: 25px;
+    margin-top: 110px;
+}
+
+.datasetProperties .placeholder .layerDesc {
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 16px;
+    margin-top: 10px;
+}
+
+.trainingProgress {
+    position: relative;
+    margin-top: 20px;
+    width: 80%;
+    height: 330px;
+    box-shadow: rgba(50, 50, 93, 0.25) 0px 6px 12px -2px, rgba(0, 0, 0, 0.3) 0px 3px 7px -3px;
+    padding: 0;
+}
+
+.trainingProgress .placeholder {
+    position: absolute;
+    background-color: white;
+    height: 100%;
+    width: 100%;
+    z-index: 3;
+}
+
+.trainingProgress .placeholder .layer {
+    position: absolute;
+    background-color: rgba(0, 0, 0, 0.8);
+    height: 100%;
+    width: 100%;
+    z-index: 3;
+}
+
+.trainingProgress .placeholder .layerName {
+    color: white;
+    font-size: 25px;
+    margin-top: 110px;
+}
+
+.trainingProgress .placeholder .layerDesc {
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 16px;
+    margin-top: 10px;
+}
+
+.trainingProgress.inProgress {
+    position: absolute;
+    background-color: white;
+    height: 100%;
+    width: 100%;
+    z-index: 2;
+}
+
+.trainingProgress .inProgress .layer {
+    position: absolute;
+    background-color: rgba(0, 0, 0, 0.8);
+    height: 100%;
+    width: 100%;
+    z-index: 2;
+}
+
+.trainingProgress .inProgress .layerName {
+    color: white;
+    font-size: 25px;
+    margin-top: 110px;
+}
+
+.trainingProgress .inProgress .layerDesc {
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 16px;
+    margin-top: 10px;
+}
+
+.trainingProgress.trainingCompleted {
+    position: absolute;
+    background-color: white;
+    height: 100%;
+    width: 100%;
+    z-index: 2;
+}
+
+.trainingProgress .trainingCompleted .layer {
+    position: absolute;
+    background-color: rgba(0, 0, 0, 0.8);
+    height: 100%;
+    width: 100%;
+    z-index: 2;
+}
+
+.trainingProgress .trainingCompleted .layerName {
+    color: white;
+    font-size: 25px;
+    margin-top: 110px;
+}
+
+.trainingProgress .trainingCompleted .layerDesc {
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 16px;
+    margin-top: 10px;
+}

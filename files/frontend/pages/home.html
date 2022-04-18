@@ -1,0 +1,75 @@
+<html>
+    <head>
+        <title>Stock Price Prediction</title>
+
+        <meta charset="utf-8">
+        <link rel="icon" href="../favicon.ico" type="image/gif" sizes="16x16">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <link rel="stylesheet" href="../static/bootstrap.min.css">
+        <script src="../static/jquery.min.js"></script>
+        <script src="../static/bootstrap.min.js"></script>
+
+        <script src="../static/chart.js"></script>
+
+        <link rel="stylesheet" href="../header.css">
+
+        <script>
+        
+            var pages = {
+                "home": "home.html",
+                "training": "training.html",
+                "predictions": "predictions.html",
+                "team": "team.html",
+                "contactus": "contactus.html"
+            }
+        
+            function changePage(e) {
+                var page = e.getAttribute("page");
+                window.location = pages[page];
+            }
+        
+        </script>
+
+    </head>
+    <body>
+        <div id="header">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-sm-4 header-title">Stock Price Prediction</div>
+                    <div class="col-sm-8">
+                        <div class="navbar">
+                            <div onclick="changePage(this)" page="home" class="nav-item active">Home</div>
+                            <div onclick="changePage(this)" page="training" class="nav-item">Training</div>
+                            <div onclick="changePage(this)" page="predictions" class="nav-item">Predictions</div>
+                            <div onclick="changePage(this)" page="team" class="nav-item">Team</div>
+                            <div onclick="changePage(this)" page="contactus" class="nav-item">Contact us</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="content">
+            <link rel="stylesheet" href="./home.css">
+
+            <div class="welcomeBanner">
+                <img class="background" src="../icons/background.jpg" />
+                <div class="text">
+                    <div class="title">Stock Price Prediction</div>
+                    <div class="subtitle">A place for better predictions</div>
+                </div>
+            </div>
+
+            <div class="container-fluid someStocks">
+                <div class="title">Some Stocks</div>
+                <div class="row">
+                    <div class="col-sm-3"><img class="google icon" src="../icons/companies/google.png" /></div>
+                    <div class="col-sm-3"><img class="microsoft icon" src="../icons/companies/microsoft.png" /></div>
+                    <div class="col-sm-3"><img class="nifty50 icon" src="../icons/companies/nifty50.png" /></div>
+                    <div class="col-sm-3"><img class="reliance icon" src="../icons/companies/reliance.png" /></div>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>

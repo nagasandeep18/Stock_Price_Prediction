@@ -1,0 +1,42 @@
+body {
+    margin: 0;
+    padding: 0;
+}
+
+#header {
+    position: fixed;
+    height: 50px;
+    width: 100%;
+    box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+    background-color: rgb(48, 48, 48);
+    color: white;
+    z-index: 100;
+}
+
+#header .header-title {
+    font-size: 20px;
+    /* font-weight: bold; */
+    padding: 10px;
+}
+
+#header .navbar {
+    text-align: right;
+    padding: 10px;
+    font-size: 16px;
+}
+
+#header .navbar .nav-item {
+    margin: 0 5px;
+    display: inline-block;
+    padding: 2px 5px;
+    cursor: pointer;
+}
+#header .navbar .nav-item.active {
+    background-color: white;
+    color: black;
+    border-radius: 50px;
+}
+
+#content {
+    padding: 70px 0;
+}

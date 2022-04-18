@@ -1,0 +1,370 @@
+<html>
+    <head>
+        <title>Stock Price Prediction</title>
+        
+        <meta charset="utf-8">
+        <link rel="icon" href="../favicon.ico" type="image/gif" sizes="16x16">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        
+        <link rel="stylesheet" href="../static/bootstrap.min.css">
+        <script src="../static/jquery.min.js"></script>
+        <script src="../static/bootstrap.min.js"></script>
+        
+        <script src="../static/chart.js"></script>
+        <script src="../static/table2CSV.js"></script>
+        
+        <link rel="stylesheet" href="../header.css">
+        
+        <script>
+            
+            var pages = {
+                "home": "home.html",
+                "training": "training.html",
+                "predictions": "predictions.html",
+                "team": "team.html",
+                "contactus": "contactus.html"
+            }
+            
+            function changePage(e) {
+                var page = e.getAttribute("page");
+                window.location = pages[page];
+            }
+            
+        </script>
+    </head>
+<body>
+    <div id="header">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-sm-4 header-title">Stock Price Prediction</div>
+                <div class="col-sm-8">
+                    <div class="navbar">
+                        <div onclick="changePage(this)" page="home" class="nav-item">Home</div>
+                        <div onclick="changePage(this)" page="training" class="nav-item">Training</div>
+                        <div onclick="changePage(this)" page="predictions" class="nav-item active">Predictions</div>
+                        <div onclick="changePage(this)" page="team" class="nav-item">Team</div>
+                        <div onclick="changePage(this)" page="contactus" class="nav-item">Contact us</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div id="content">
+        <link rel="stylesheet" href="./predictions.css">
+
+        <div class="predictionsPage">
+                <center>
+                    <div class="btn-group selectModel">
+                        <button type="button" data-toggle="dropdown" >Select Model</button>
+                        <div class="dropdown-menu dropdown-menu-center"></div>
+                    </div>
+                </center>
+                
+                <center>
+                    <div class="container-fluid predictionResults">
+                        <div class="placeholder">
+                            <div class="layer">
+                                <div class="layerName">Model</div>
+                                <div class="layerDesc">Select the model by clicking "Select Model" button to show predictions.</div>
+                            </div>
+                        </div>
+                        <div class="inProgress">
+                            <div class="layer">
+                                <div class="layerName">Model</div>
+                                <img src="../icons/loading.svg" />
+                                <div class="layerDesc">Loading model from server</div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="modelName"></div>
+                            <div class="col-sm-8 predictionGraphHolder"><canvas id="predictionGraph"></canvas></div>
+                            <div class="col-sm-4">
+                                <div class="accuracyPercentage"></div>
+                                <div class="realPredTable"></div>
+                                <button class="downloadButton">Download</button>
+                            </div>
+                        </div>
+                    </div>
+                </center>
+                <center>
+                    <button class="predictNextDayButton">Predict Next Day</button>
+                    <div class="container-fluid predictNextDayDiv">
+                        <div class="row">
+                            <div class="col-sm-1"></div>
+                            <div class="col-sm-2">
+                                <div class="input-text">Open</div>
+                                <input type="text" class="input-value openValue" />
+                            </div>
+                            <div class="col-sm-2">
+                                <div class="input-text">High</div>
+                                <input type="text" class="input-value highValue" />
+                            </div>
+                            <div class="col-sm-2">
+                                <div class="input-text">Low</div>
+                                <input type="text" class="input-value lowValue" />
+                            </div>
+                            <div class="col-sm-2">
+                                <div class="input-text">Volume</div>
+                                <input type="text" class="input-value volumeValue" />
+                            </div>
+                            <div class="col-sm-2">
+                                <div class="input-text">Action</div>
+                                <button class="startManualPrediction">Predict Next Day</button>
+                            </div>
+                            <div class="col-sm-1"></div>
+                        </div>
+                        <div class="manualPrediction"></div>
+                    </div>
+                </center>
+            </div>
+            
+            <script>
+            
+                function plotGraph(chartId, trainingDates, trainingData, predictionDates, predictionData, showAnimation) {
+                    var training = [];
+                    var predictions = [];
+                    var animation = false;
+            
+                    var count=0;
+                    for (let i=0; i < trainingData.length; i++, count++) {
+                        training.push(trainingData[i]);
+                        predictions.push(NaN);
+                    }
+            
+                    predictions[training.length - 1] = training[training.length - 1];
+            
+                    for (let i=0; i < predictionData.length; i++, count++) {
+                        predictions.push(predictionData[i]);
+                    }
+            
+                    
+                    if (showAnimation) {
+                        const totalDuration = 7600;
+                        const delayBetweenPoints = totalDuration / (training.length + predictions.length);
+                        const previousY = (ctx) => ctx.index === 0 ? ctx.chart.scales.y.getPixelForValue(100) : ctx.chart.getDatasetMeta(ctx.datasetIndex).data[ctx.index - 1].getProps(['y'], true).y;
+                        animation = {
+                            x: {
+                                type: 'number',
+                                easing: 'linear',
+                                duration: delayBetweenPoints,
+                                from: NaN, // the point is initially skipped
+                                delay(ctx) {
+                                    if (ctx.type !== 'data' || ctx.xStarted) {
+                                        return 0;
+                                    }
+                                    ctx.xStarted = true;
+                                    return ctx.index * delayBetweenPoints;
+                                }
+                            },
+                            y: {
+                                type: 'number',
+                                easing: 'linear',
+                                duration: delayBetweenPoints,
+                                from: previousY,
+                                delay(ctx) {
+                                    if (ctx.type !== 'data' || ctx.yStarted) {
+                                        return 0;
+                                    }
+                                    ctx.yStarted = true;
+                                    return ctx.index * delayBetweenPoints;
+                                }
+                            }
+                        };
+                    }
+                    
+                    const config = {
+                        type: 'line',
+                        data: {
+                            datasets: [{
+                                borderColor: "#3aa4eb",
+                                borderWidth: 1,
+                                radius: 0,
+                                data: training,
+                            },
+                            {
+                                borderColor: "#ff7b00",
+                                borderWidth: 1,
+                                radius: 0,
+                                data: predictions,
+                            }],
+                            
+                        },
+                        options: {
+                            animation,
+                            interaction: {
+                                intersect: false
+                            },
+                            plugins: {
+                                legend: false
+                            },
+                            scales: {
+                                x: {
+                                    type: 'category',
+                                    labels: trainingDates.concat(predictionDates)
+                                }
+                            }
+                        }
+                    };
+                    
+                    
+                    var myChart = new Chart(
+                        document.getElementById(chartId),
+                        config
+                    );
+            
+                    return myChart;
+                        
+                }
+            
+                function selectModel(modelName) {
+                    $('.placeholder').hide();
+                    $('.downloadButton').hide();
+                    $('.inProgress').show();
+                    
+                    $('.predictionGraphHolder').html(`<canvas id="predictionGraph"></canvas>`);
+                    $('.realPredTable').html('');
+
+                    $.ajax({
+                        url: 'http://localhost:7676/getPredictions',
+                        method: 'post',
+                        data: {"modelName": modelName},
+                        success: (res) => {
+                            console.log(res);
+
+                            $('.modelName').html(res.modelName + " Dataset");
+                            
+                            $('.realPredTable').attr("table-name", res.modelName);
+
+                            $('.inProgress').hide();
+                            $('.downloadButton').show();
+                            $('.predictNextDayButton').show();
+
+                            plotGraph(
+                                'predictionGraph', 
+                                res.modelData.training.dates,
+                                res.modelData.training.data,
+                                res.modelData.predictions.dates,
+                                res.modelData.predictions.predictedData,
+                                true
+                            );
+
+                            var dates = res.modelData.predictions.dates;
+                            var realData = res.modelData.predictions.realData;
+                            var predictedData = res.modelData.predictions.predictedData;
+
+                            var head = `
+                            <thead>
+                                <tr>
+                                    <th scope="col">Date</th>
+                                    <th scope="col">Actual</th>
+                                    <th scope="col">Predicted</th>
+                                </tr>
+                            <thead>
+                            `;
+
+                            var len = realData.length;
+                            var body = `<tbody>`;
+
+                            for (var row=0; row<len; row++) {
+                                body += `
+                                <tr>
+                                    <td>`+dates[row]+`</td>
+                                    <td>`+realData[row].toFixed(2)+`</td>
+                                    <td>`+predictedData[row].toFixed(2)+`</td>
+                                </tr>
+                                `;
+                            }
+                            body += `</tbody>`;
+
+                            var table = `<table style="height: 100px!important" class="table table-hover">` + head + body + `</table>`;
+                            $('.realPredTable').html(table);
+
+                            $('.accuracyPercentage').html("Accuracy: "+res.modelData.predictions.accuracy.toFixed(2) + " %");
+                        }
+                    });
+                }
+
+                $('.downloadButton').click(function () {
+                    var table = $('.realPredTable').first();
+                    var tableName = $('.realPredTable').attr("table-name");
+                    
+                    var csv = $(table).table2CSV({
+                        delivery: 'value'
+                    });
+                    
+                    var link=document.createElement('a');
+                    link.href = 'data:text/csv;charset=UTF-8,' + encodeURIComponent(csv);
+                    link.download = tableName + " Results.csv";
+                    link.click();
+                });
+
+                $('.predictNextDayButton').click(()=>{
+                    $('.predictNextDayDiv').show();
+                });
+                
+                $('.startManualPrediction').click(()=>{
+                    var fileName = $('.realPredTable').attr("table-name");
+
+                    var openValue = $('.openValue').val();
+                    var highValue = $('.highValue').val();
+                    var lowValue = $('.lowValue').val();
+                    var volumeValue = $('.volumeValue').val();
+
+                    if ((openValue == "") || (highValue == "") || (lowValue == "") || (volumeValue == "")) {
+                        alert("Please fill all the details");
+                        return;
+                    }
+
+                    $.ajax({
+                        url: 'http://localhost:7676/getManualPrediction',
+                        method: 'post',
+                        data: {
+                            "fileName": fileName,
+                            "openValue": openValue,
+                            "highValue": highValue,
+                            "lowValue": lowValue,
+                            "volumeValue": volumeValue
+                        },
+                        success: (res) => {
+                            console.log(res);
+
+                            $('.manualPrediction').html('Predicted: '+res.manualPrediction);
+
+                            var openValue = $('.openValue').val("");
+                            var highValue = $('.highValue').val("");
+                            var lowValue = $('.lowValue').val("");
+                            var volumeValue = $('.volumeValue').val("");
+                        }
+                    });
+                });
+
+                $(document).ready(() => {
+                    $('.inProgress').hide();
+                    $('.predictNextDayDiv').hide();
+                    $('.predictNextDayButton').hide();
+
+                    $.ajax({
+                        url: 'http://localhost:7676/getPreTrainedModels',
+                        method: 'post',
+                        success: (res) => {
+                            console.log(res);
+            
+                            var preTrainedModelNames = res.preTrainedModelNames;
+                            var options = ``;
+                            
+                            for (var i in preTrainedModelNames) {
+                                options += `<a class="dropdown-item" onclick="selectModel('`+preTrainedModelNames[i]+`')" href="#" >` + preTrainedModelNames[i] + `</a>`;
+                            }
+                            
+                            $('.selectModel .dropdown-menu').html(options);
+                        }
+                    });
+                });
+                
+            </script>
+        </div>
+    </body>
+</html>
+
+

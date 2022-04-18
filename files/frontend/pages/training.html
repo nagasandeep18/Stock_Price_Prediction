@@ -1,0 +1,322 @@
+<html>
+    <head>
+        <title>Stock Price Prediction</title>
+
+        <meta charset="utf-8">
+        <link rel="icon" href="../favicon.ico" type="image/gif" sizes="16x16">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <link rel="stylesheet" href="../static/bootstrap.min.css">
+        <script src="../static/jquery.min.js"></script>
+        <script src="../static/bootstrap.min.js"></script>
+
+        <script src="../static/chart.js"></script>
+
+        <link rel="stylesheet" href="../header.css">
+
+        <script>
+        
+            var pages = {
+                "home": "home.html",
+                "training": "training.html",
+                "predictions": "predictions.html",
+                "team": "team.html",
+                "contactus": "contactus.html"
+            }
+        
+            function changePage(e) {
+                var page = e.getAttribute("page");
+                window.location = pages[page];
+            }
+        
+        </script>
+
+    </head>
+    <body>
+        <div id="header">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-sm-4 header-title">Stock Price Prediction</div>
+                    <div class="col-sm-8">
+                        <div class="navbar">
+                            <div onclick="changePage(this)" page="home" class="nav-item">Home</div>
+                            <div onclick="changePage(this)" page="training" class="nav-item active">Training</div>
+                            <div onclick="changePage(this)" page="predictions" class="nav-item">Predictions</div>
+                            <div onclick="changePage(this)" page="team" class="nav-item">Team</div>
+                            <div onclick="changePage(this)" page="contactus" class="nav-item">Contact us</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="content">
+            <link rel="stylesheet" href="./training.css">
+
+            <div class="upload">
+                <button onclick="$('.selectFile').click()">New Training Data</button>
+                <input class="selectFile" type="file" />
+            </div>
+
+            <center>
+                <button class="startTraining">Start Training</button>
+                <div class="container-fluid datasetProperties">
+                    <div class="placeholder">
+                        <div class="layer">
+                            <div class="layerName">Dataset</div>
+                            <div class="layerDesc">Click on "New Training Data" button to load the dataset</div>
+                        </div>
+                    </div>
+                    <div class="filename">Filename: <input class="fileNameInput" type="text" /></div>
+                    <div class="row">
+                        <div class="col-sm-7">
+                            <div class="dfHead"></div>
+                        </div>
+                        <div class="col-sm-5 closePriceGraphHolder">
+                            <canvas id="closePriceGraph"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </center>
+
+            <center>
+                <div class="container-fluid trainingProgress">
+                    <div class="placeholder">
+                        <div class="layer">
+                            <div class="layerName">Training</div>
+                            <div class="layerDesc">Click on "Start Training" button to start the training</div>
+                        </div>
+                    </div>
+                    <div class="inProgress">
+                        <div class="layer">
+                            <div class="layerName">Training</div>
+                            <img src="../icons/loading.svg" />
+                            <div class="layerDesc">Training</div>
+                        </div>
+                    </div>
+                    <div class="trainingCompleted">
+                        <div class="layer">
+                            <div class="layerName">Training Completed</div>
+                            <div class="layerDesc">Now you can see the predictions in "Predictions" tab</div>
+                        </div>
+                    </div>
+                </div>
+            </center>
+
+            <script>
+
+                var checkTrainingStatusVar = null;
+
+                function isInt(n){
+                    return Number(n) === n && n % 1 === 0;
+                }
+
+                function isFloat(n){
+                    return Number(n) === n && n % 1 !== 0;
+                }
+
+                function loaddfHead(cols, tableData) {
+                    var head = `<thead><tr>`;   
+                    for (var col in cols) {
+                        head += `<th scope="col">` + cols[col] + `</th>`;
+                    }
+                    head += `</tr></thead>`;
+
+                    var body = `<tbody>`;
+                    for (var row in tableData) {
+                        var rowHTML = `<tr>`;
+                        for (col in tableData[row]) {
+                            if (isFloat(tableData[row][col]) || isInt(tableData[row][col])) rowHTML += `<td>` + tableData[row][col].toFixed(2) + `</td>`;
+                            else rowHTML += `<td>` + tableData[row][col] + `</td>`;
+                        }
+                        rowHTML += `</tr>`;
+                        body += rowHTML;
+                    }
+                    body += `</tbody>`;
+
+                    var table = `<table style="height: 100px!important" class="table table-hover">` + head + body + `</table>`;
+                    $('.dfHead').html(table);
+                }
+
+                
+                function plotGraph(chartId, dfDateVals, rawData, showAnimation) {
+                    var data = [];
+                    var animation = false;
+
+                    for (let i = 0; i < rawData.length; i++) {
+                        data.push({x: i, y: rawData[i]});
+                    }
+                    
+                    if (showAnimation) {
+                        const totalDuration = 3000;
+                        const delayBetweenPoints = totalDuration / data.length;
+                        const previousY = (ctx) => ctx.index === 0 ? ctx.chart.scales.y.getPixelForValue(100) : ctx.chart.getDatasetMeta(ctx.datasetIndex).data[ctx.index - 1].getProps(['y'], true).y;
+                        animation = {
+                            x: {
+                                type: 'number',
+                                easing: 'linear',
+                                duration: delayBetweenPoints,
+                                from: NaN, // the point is initially skipped
+                                delay(ctx) {
+                                    if (ctx.type !== 'data' || ctx.xStarted) {
+                                        return 0;
+                                    }
+                                    ctx.xStarted = true;
+                                    return ctx.index * delayBetweenPoints;
+                                }
+                            },
+                            y: {
+                                type: 'number',
+                                easing: 'linear',
+                                duration: delayBetweenPoints,
+                                from: previousY,
+                                delay(ctx) {
+                                    if (ctx.type !== 'data' || ctx.yStarted) {
+                                        return 0;
+                                    }
+                                    ctx.yStarted = true;
+                                    return ctx.index * delayBetweenPoints;
+                                }
+                            }
+                        };
+                    }
+                    
+                    const config = {
+                        type: 'line',
+                        data: {
+                            datasets: [{
+                                borderColor: "#3aa4eb",
+                                borderWidth: 1,
+                                radius: 0,
+                                data: data,
+                            }]
+                        },
+                        options: {
+                            animation,
+                            interaction: {
+                                intersect: false
+                            },
+                            plugins: {
+                                legend: false
+                            },
+                            scales: {
+                                x: {
+                                    type: 'category',
+                                    labels: dfDateVals
+                                }
+                            }
+                        }
+                    };
+                    
+                    
+                    var myChart = new Chart(
+                        document.getElementById(chartId),
+                        config
+                    );
+
+                    return myChart;
+                        
+                }
+
+                function loadDataset(res) {
+                    $('.fileNameInput').val(res.fileName);
+                    loaddfHead(res.cols, res.dfColVals);
+
+                    $('.closePriceGraphHolder').html(`<canvas id="closePriceGraph"></canvas>`);
+                    plotGraph('closePriceGraph', res.dfDateVals, res.dfCloseVals, false);
+
+                    $('.datasetProperties .placeholder').hide();
+                }
+
+                function checkTrainingStatus() {
+                    checkTrainingStatusVar = setInterval(() => {
+                        $.ajax({
+                            url: 'http://localhost:7676/trainingStatus',
+                            method: 'post',
+                            success: (res) => {
+                                console.log(res);
+                                $('.trainingProgress .inProgress .layerDesc').html("Training " + Math.round((res.epochs/res.totalEpochs)*100) + "%");
+                                if (res.status != "training") {
+                                    stopTrainingStatusCheck();
+                                }
+                            }
+                        });
+                    }, 1000);
+                }
+
+                function stopTrainingStatusCheck() {
+                    clearInterval(checkTrainingStatusVar);
+
+                    $('.trainingProgress .inProgress').hide();
+                    $('.trainingProgress .trainingCompleted').show();
+                }
+
+                $('.selectFile').change(() => {
+                    var file = $('.selectFile')[0].files[0];
+                    var extension = file.name.substring(file.name.lastIndexOf(".")+1);
+
+                    if (extension != "csv") {
+                        alert("Only CSV files are accepted as training data");
+                        return;
+                    }
+
+                    var formData = new FormData();
+                    formData.append('file', file);
+
+                    $.ajax({
+                        url: 'http://localhost:7676/upload',
+                        type: "POST",
+                        processData: false,
+                        contentType: false,
+                        data: formData,
+                        success: (res) => {
+                            console.log(res);
+                            loadDataset(res);
+                        },
+                        error: (res)=> {
+                            // console.log(String(e.responseText))
+                            // console.log(JSON.parse(String(e.responseText)));
+                            loadDataset(res);
+                        }
+                    });
+                });
+
+                $('.startTraining').click(() => {
+                    $('.trainingProgress .placeholder').hide();
+                    $('.trainingProgress .trainingCompleted').hide();
+                    
+                    $.ajax({
+                        url: 'http://localhost:7676/startTraining',
+                        method: "POST",
+                        data: {"fileName": $('.fileNameInput').val()},
+                        success: (res) => {
+                            
+                        }
+                    });
+
+                    checkTrainingStatus();
+                });
+
+                $(document).ready(() => {
+                    $.ajax({
+                        url: 'http://localhost:7676/trainingStatus',
+                        method: 'post',
+                        success: (res) => {
+                            if (res.status == "training") {
+                                loadDataset(res);
+
+                                $('.trainingProgress .placeholder').hide();
+                                $('.trainingProgress .trainingCompleted').hide();
+
+                                checkTrainingStatus();
+                            }
+                        }
+                    });
+                });
+                    
+            </script>
+        </div>
+    </body>
+</html>
+
+
